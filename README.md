@@ -54,4 +54,4 @@ Note: The SD-Card should be flashed and have running Raspbian OS on it, for the 
 # CAN BUS Module
 The project requires CAN BUS modules, for instance we used MCP2515 CAN controller and TJA1050 CAN Transceiver. 
 
-Refer to this repository to see the changes required if you choose a 5V module: [Link Text](https://github.com/tolgakarakurt/CANBus-MCP2515-Raspi/tree/master?tab=readme-ov-file)
+Refer to this repository to see the changes required if you choose a 5V module: [CANBus-MCP2515-Modification](https://github.com/tolgakarakurt/CANBus-MCP2515-Raspi/tree/master?tab=readme-ov-file)
