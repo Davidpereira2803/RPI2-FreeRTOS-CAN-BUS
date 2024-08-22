@@ -40,11 +40,9 @@ void task2(void *pParam) {
 
 
 void displayBinaryOnLEDs(uint32_t decimal) {
-    // GPIO pins mapped to LEDs (from LSB to MSB)
     uint8_t ledPins[11] = {19,26,13,5,6,16,20, 8,7,12};
 
     for(int i = 0; i < 11; i++) {
-        // Extract the ith bit (from LSB to MSB)
         uint8_t bit = (decimal >> i) & 0x01;
         
 		if(bit == 1){
