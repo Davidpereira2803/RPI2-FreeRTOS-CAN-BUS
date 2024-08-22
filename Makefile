@@ -6,8 +6,8 @@ SOURCES = Demo/main.c \
           Demo/Drivers/rpi_irq.c \
           Demo/Tasks/ledcontrol.c \
           Demo/Tasks/binaryblink.c \
-		  Demo/Tasks/Bench/complex_updates/complex_updates.c \
 		  Demo/Tasks/Bench/gsm_enc/gsm_enc.c \
+		  Demo/Tasks/Bench/countnegative/countnegative.c \
           Source/tasks.c \
           Source/list.c \
           Source/portable/GCC/RaspberryPi/port.c \
