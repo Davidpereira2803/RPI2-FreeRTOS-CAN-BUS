@@ -38,11 +38,16 @@ void task2(void *pParam) {
 }
 // End Default task1 and task2
 
-
+/*
+	Function to display a decimal number as binary on LEDs
+*/
 void displayBinaryOnLEDs(uint32_t decimal) {
-    uint8_t ledPins[11] = {19,26,13,5,6,16,20, 8,7,12};
+	// List of LED pins, where the first pin represents bit 0
+    uint8_t ledPins[11] = {19,26,13,5,6,16,20,8,7,12};
 
+	// Loop through list and turn the LED on or OFF
     for(int i = 0; i < 11; i++) {
+		// Get bit 0 or 1 from the decimal number
         uint8_t bit = (decimal >> i) & 0x01;
         
 		if(bit == 1){
@@ -53,14 +58,12 @@ void displayBinaryOnLEDs(uint32_t decimal) {
     }
 }
 
-
-
 /*
 	Task to run the benchmark comples_updates
 	Calls the function "comrun(NULL)", to execute the benchmark
 	Computes the time recuired for the execution
 */
-void benchtask(void *pvParameters)
+void gsmbenchtask(void *pParam)
 {
 	int count = 0;
 	// Tick values startt and endt -> count ticks 1 tick = 1ms (1000hz)
@@ -72,13 +75,9 @@ void benchtask(void *pvParameters)
 
 		startt = xTaskGetTickCount();
 
-		countrun(NULL);
-		//gsmrun(NULL);
+		gsmrun(NULL);
 
 		endt = xTaskGetTickCount();
-
-		//exect = endt - startt;
-
 
         if (exect < endt - startt)
         {
@@ -123,11 +122,7 @@ int main(void) {
 	*/
 
 	// Create and call task to run the benchmark
-	xTaskCreate(benchtask, "Complex Updates Bench", 512, NULL, 1 , NULL);
-	// save the execution time and execute the binary blink to output the result
-	//int decimalnum = exect;
-
-	//xTaskCreate(decimaltobinaryblinktask, "Blink Binary", 128, (void*)&decimalnum, 1, NULL);
+	xTaskCreate(gsmbenchtask, "Complex Updates Bench", 512, NULL, 1 , NULL);
 
 	vTaskStartScheduler();
 
