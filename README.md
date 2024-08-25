@@ -15,6 +15,8 @@ This repistory is a fork of the main rep, and has extended functionnality, for i
 
 # How to install and run FreeRTOS on a RPI 2
 
+Before using the command make, ensure that you have a "main.c" file in the /Demo folder, just rename a "..._main.c" file to "main.c"
+
 Clone the repository
 
 ```
