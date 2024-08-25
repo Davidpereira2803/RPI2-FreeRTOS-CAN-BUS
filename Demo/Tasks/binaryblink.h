@@ -6,7 +6,5 @@ void decimaltobinaryblink(int decimalnum, int bits);
 
 void decimaltobinaryblinktask(void *pParam);
 
-void blink( int num);
-
 #endif 
 

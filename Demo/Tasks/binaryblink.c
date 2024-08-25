@@ -65,8 +65,3 @@ void decimaltobinaryblinktask(void *pParam) {
         vTaskDelay(pdMS_TO_TICKS(3000)); // Delay between full binary displays 3s
     }
 }
-
-
-void blink( int num){
-    decimaltobinaryblink(num, 7);
-}

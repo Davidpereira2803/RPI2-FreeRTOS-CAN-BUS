@@ -7,10 +7,9 @@
 #include "Tasks/ledcontrol.h"
 #include "Tasks/binaryblink.h"
 
-#include "Tasks/Bench/countnegative/countnegative.h"
 #include "Tasks/Bench/gsm_enc/gsm_enc.h"
 
-
+// Variable storing the time difference between startt and endt
 TickType_t exect;
 
 // Start Default task1 and task2
@@ -67,7 +66,7 @@ void gsmbenchtask(void *pParam)
 {
 	int count = 0;
 	// Tick values startt and endt -> count ticks 1 tick = 1ms (1000hz)
-	while (count < 100)
+	while (count < 10)
 	{
 		count++;
 
@@ -122,7 +121,7 @@ int main(void) {
 	*/
 
 	// Create and call task to run the benchmark
-	xTaskCreate(gsmbenchtask, "Complex Updates Bench", 512, NULL, 1 , NULL);
+	xTaskCreate(gsmbenchtask, "GSM ENC Bench", 512, NULL, 1 , NULL);
 
 	vTaskStartScheduler();
 
