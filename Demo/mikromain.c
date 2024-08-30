@@ -1,15 +1,17 @@
 #include <FreeRTOS.h>
 #include <task.h>
+#include <stdint.h>
 
 #include "Drivers/rpi_gpio.h"
 #include "Drivers/rpi_irq.h"
 
 #include "Tasks/ledcontrol.h"
 #include "Tasks/binaryblink.h"
+#include "Tasks/time.h"
 
 // variables storing the start, end and the difference of the tickcount
-TickType_t exect;
-TickType_t startt, endt;
+uint32_t exect;
+uint32_t startt, endt;
 
 //  Input list and the  currentValue, select default 11 which is not in the list
 volatile int input[10];
@@ -39,7 +41,6 @@ void task2(void *pParam) {
 	}
 }
 // End Default task1 and task2
-
 
 /*
 	Function to display a decimal number as binary on LEDs
@@ -90,7 +91,7 @@ void taskt1(void *pParam)
 	input[10] = 10;
 
 	// Start tickcount
-	startt = xTaskGetTickCount();
+	startt = get_cycles();
 	int count = 0;
 	
 	// Tick values startt and endt -> count ticks 1 tick = 1ms (1000hz)
@@ -127,7 +128,7 @@ void taskt2(void *pParam)
 	while (notfound)
 	{	
 		// Delay the task by 100ms at the start
-		// vTaskDelay(pdMS_TO_TICKS(200)/2);
+		vTaskDelay(pdMS_TO_TICKS(200)/2);
 
 		// Display the number that is beeing searched
 		displayBinaryOnLEDs(number);
@@ -138,48 +139,28 @@ void taskt2(void *pParam)
 			// Set notfound = 0 to exit the loop
 			notfound = 0;
 			// end the tick cound
-			endt = xTaskGetTickCount();
-			// Compute the time
-			exect = endt - startt;
+			endt = get_cycles();
+			
+			// Compute the cycles from startt to endt
+			uint32_t total = endt - startt;
+
+			// Cycles to microseconds, divide by the cpu clock speed Mhz
+			exect = total / 900;
 		}
 
 		// Delay the task by 100ms at the end
-		vTaskDelay(pdMS_TO_TICKS(200));
+		vTaskDelay(pdMS_TO_TICKS(200)/2);
 	}
 
 	/*
 		Display the time from the
 		first input to taskt1 to the first match of taskt2
 	*/
-	displayBinaryOnLEDs(exect);	
+	displayBinaryOnLEDs(exect/1000);	
 	
 	// Delete the task
 	vTaskDelete(NULL);
 }
-
-void taskt3(void *pParam)
-{
-
-
-	while (1)
-	{	
-		for (int i = 0; i < 10000; i++)
-		{
-			/* code */
-		}
-		
-
-		// Delay the task by 100ms at the end
-		vTaskDelay(pdMS_TO_TICKS(100));
-	}
-
-	/*
-		Display the time from the
-		first input to taskt1 to the first match of taskt2
-	*/
-	
-}
-
 
 /**
  *	This is the systems main entry, some call it a boot thread.
@@ -188,18 +169,20 @@ void taskt3(void *pParam)
  *	-- the same prototype as you'd see in a linux program.
  **/
 int main(void) {
+	start_pmu_register();
 
 	rpi_cpu_irq_disable();
 
 	rpi_gpio_sel_fun(47, 1);			// RDY led
 	rpi_gpio_sel_fun(35, 1);			// RDY led
 
-	//xTaskCreate(task1, "LED_0", 128, NULL, 0, NULL);
-	//xTaskCreate(task2, "LED_1", 128, NULL, 0, NULL);
+	// xTaskCreate(task1, "LED_0", 128, NULL, 0, NULL);
+	// xTaskCreate(task2, "LED_1", 128, NULL, 0, NULL);
+
+	// measure_time();
 
     xTaskCreate(taskt1, "TASK T1", 256, NULL, 0 , NULL);
-	xTaskCreate(taskt2, "TASK T2", 256, NULL, 2 , NULL);
-	xTaskCreate(taskt3, "TASK T3", 256, NULL, 1 , NULL);
+	xTaskCreate(taskt2, "TASK T2", 256, NULL, 0 , NULL);
 
 	vTaskStartScheduler();
 

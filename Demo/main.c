@@ -13,8 +13,8 @@ TickType_t startt, endt;
 
 //  Input list and the  currentValue, select default 11 which is not in the list
 volatile int input[10];
-volatile int currentValue = 11;
-
+volatile int result = 0;
+volatile int startvalue = 0;
 // Start Default task1 and task2
 const TickType_t xDelay = 500 * portTICK_PERIOD_MS;
 
@@ -76,67 +76,45 @@ int valuereturn(int index)
 */
 void taskt1(void *pParam)
 {
-	// Put values in the list
-	input[0] = 0;
-	input[1] = 1;
-	input[2] = 2;
-	input[3] = 3;
-	input[4] = 4;
-	input[5] = 5;
-	input[6] = 6;
-	input[7] = 7;
-	input[8] = 8;
-	input[9] = 9;
-	input[10] = 10;
+
 
 	// Start tickcount
 	startt = xTaskGetTickCount();
-	int count = 0;
+	
 	
 	// Tick values startt and endt -> count ticks 1 tick = 1ms (1000hz)
-	while (count < 11)
+	while (1)
 	{
 		/*
 			Set the currentValue to the valuereturn with index count
 			increment count
 			delay 200ms
 		*/
-		currentValue = valuereturn(count);
-		count++;
-		vTaskDelay(pdMS_TO_TICKS(200));
+
+		startvalue++;
+		vTaskDelay(pdMS_TO_TICKS(3000));
 	}
 	
-	// Light up LED to tell that the loop has finished
-	vLEDON(4);
 
-	// Delete the task
-    vTaskDelete(NULL);
 }
 
 /*
 	Taskt2, is reading the currentValue periodically
 	and waiting for a match with number 6 
 */
-void taskt2(void *pParam)
+void taskt3(void *pParam)
 {
 	// notfound is 1 to keep the while loop running
-	int notfound = 1;
-	// number to find
-	int number = 6;
 
-	while (notfound)
+
+	while (1)
 	{	
-		// Delay the task by 100ms at the start
-		// vTaskDelay(pdMS_TO_TICKS(200)/2);
 
-		// Display the number that is beeing searched
-		displayBinaryOnLEDs(number);
 
 		// Read currentValue and check if it matches number
-		if (currentValue == number)
+		if ((startvalue*2) == result )
 		{
 			// Set notfound = 0 to exit the loop
-			notfound = 0;
 			// end the tick cound
 			endt = xTaskGetTickCount();
 			// Compute the time
@@ -144,33 +122,31 @@ void taskt2(void *pParam)
 		}
 
 		// Delay the task by 100ms at the end
-		vTaskDelay(pdMS_TO_TICKS(200));
+		displayBinaryOnLEDs(exect);	
+		vTaskDelay(pdMS_TO_TICKS(500));
 	}
 
 	/*
 		Display the time from the
 		first input to taskt1 to the first match of taskt2
 	*/
-	displayBinaryOnLEDs(exect);	
+	
 	
 	// Delete the task
 	vTaskDelete(NULL);
 }
 
-void taskt3(void *pParam)
+void taskt2(void *pParam)
 {
 
 
 	while (1)
 	{	
-		for (int i = 0; i < 10000; i++)
-		{
-			/* code */
-		}
+		result = startvalue * 2;
 		
 
 		// Delay the task by 100ms at the end
-		vTaskDelay(pdMS_TO_TICKS(100));
+		vTaskDelay(pdMS_TO_TICKS(500));
 	}
 
 	/*
@@ -194,12 +170,12 @@ int main(void) {
 	rpi_gpio_sel_fun(47, 1);			// RDY led
 	rpi_gpio_sel_fun(35, 1);			// RDY led
 
-	//xTaskCreate(task1, "LED_0", 128, NULL, 0, NULL);
-	//xTaskCreate(task2, "LED_1", 128, NULL, 0, NULL);
+	// xTaskCreate(task1, "LED_0", 128, NULL, 0, NULL);
+	// xTaskCreate(task2, "LED_1", 128, NULL, 0, NULL);
 
-    xTaskCreate(taskt1, "TASK T1", 256, NULL, 0 , NULL);
-	xTaskCreate(taskt2, "TASK T2", 256, NULL, 2 , NULL);
-	xTaskCreate(taskt3, "TASK T3", 256, NULL, 1 , NULL);
+    xTaskCreate(taskt1, "TASK T1", 256, NULL, 2, NULL);
+	xTaskCreate(taskt2, "TASK T2", 256, NULL, 1 , NULL);
+	xTaskCreate(taskt3, "TASK T3", 256, NULL, 0 , NULL);
 
 	vTaskStartScheduler();
 

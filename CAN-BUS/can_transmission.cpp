@@ -142,6 +142,10 @@ void* isolate_core(void* arg)
     // set the affinity
     pthread_getaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpuset);
 
+    /*
+        Loop through each CPU core and check if the current cpu is set(isolated)
+        if so the core_iod is that core
+    */
     int core_id = -1;
     for (int i = 0; i < CPU_SETSIZE; i++) {
         if (CPU_ISSET(i, &cpuset)) {

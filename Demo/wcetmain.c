@@ -7,10 +7,14 @@
 #include "Tasks/ledcontrol.h"
 #include "Tasks/binaryblink.h"
 
+#include "Tasks/time.h"
+
 #include "Tasks/Bench/gsm_enc/gsm_enc.h"
 
 // Variable storing the time difference between startt and endt
 TickType_t exect;
+uint32_t tot;
+
 
 // Start Default task1 and task2
 const TickType_t xDelay = 500 * portTICK_PERIOD_MS;
@@ -70,22 +74,30 @@ void gsmbenchtask(void *pParam)
 	{
 		count++;
 
-		TickType_t startt, endt;
+		// TickType_t startt, endt;
+		uint32_t st, end;
 
-		startt = xTaskGetTickCount();
+		// startt = xTaskGetTickCount();
+		st = get_cycles();
 
 		gsmrun(NULL);
 
-		endt = xTaskGetTickCount();
+		// endt = xTaskGetTickCount();
+		end = get_cycles();
 
-        if (exect < endt - startt)
+        // if (exect < endt - startt)
+        // {
+        //     exect = endt - startt;
+        // }else {
+        //     exect = exect;
+        // }
+
+		if (tot < end - st)
         {
-            exect = endt - startt;
-        }else {
-            exect = exect;
+            tot = end - st;
         }
 		
-		displayBinaryOnLEDs(exect);
+		displayBinaryOnLEDs(tot);
 
 		vTaskDelay(pdMS_TO_TICKS(2000));
 
@@ -119,6 +131,8 @@ int main(void) {
 	/*
 		(end) Default
 	*/
+
+	start_pmu_register();
 
 	// Create and call task to run the benchmark
 	xTaskCreate(gsmbenchtask, "GSM ENC Bench", 512, NULL, 1 , NULL);
